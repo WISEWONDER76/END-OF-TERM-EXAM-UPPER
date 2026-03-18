@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wise Robotics & STEM Exam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #002395; 
+            --secondary: #FFB800;
+            --success: #22C55E; /* Green */
+            --info: #3B82F6;    /* Blue */
+            --danger: #E71D36;
+            --bg: #F0F9FF;      /* Light blue tint */
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 10px;
+            color: #333;
+            display: flex;
+            align-items: flex-start; /* Better for mobile scrolling */
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--white);
+            border-radius: 20px; /* Slightly tighter for mobile */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .app-logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+
+        .logo-text {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8em; /* Responsive size */
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .screen { 
+            display: none; 
+            width: 100%; 
+            padding: 20px; /* Reduced padding for mobile */
+            animation: fadeIn 0.3s ease-out; 
+        }
+        .screen.active { display: flex; flex-direction: column; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Registration */
+        .info-form { gap: 15px; display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; width: 100%; }
+        .input-group label { display: block; font-weight: 700; margin-bottom: 6px; color: var(--primary); font-size: 0.9em; }
+        .input-group input {
+            width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 12px;
+            box-sizing: border-box; font-size: 1em; font-family: inherit;
+        }
+
+        /* Exam Interface */
+        .progress-track { height: 8px; background: #E2E8F0; border-radius: 4px; margin-bottom: 15px; }
+        #progress-fill { height: 100%; width: 0%; background: var(--success); border-radius: 4px; transition: 0.3s; }
+        
+        .question-text { font-weight: 700; font-size: 1.1em; color: #1e293b; margin-bottom: 15px; line-height: 1.4; }
+        .options { display: grid; gap: 10px; }
+        .option {
+            padding: 14px; background: white; border: 2px solid #E2E8F0; border-radius: 12px;
+            cursor: pointer; transition: 0.2s; font-weight: 600; font-size: 1em;
+            word-wrap: break-word;
+        }
+        .option.selected { background: #eff6ff; border-color: var(--info); color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+
+        /* Results / Certificate - THEMED BLUE, WHITE, GREEN */
+        #report-screen { 
+            text-align: center; 
+            background: white;
+            border: 8px solid var(--info); /* Reduced border for mobile */
+            border-radius: 20px;
+            margin: 10px;
+            position: relative;
+            padding: 30px 15px 15px;
+        }
+        
+        #report-screen::before {
+            content: '🎨 🚀 🤖 🧪';
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            padding: 5px 15px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            border: 3px solid var(--info);
+            white-space: nowrap;
+        }
+
+        .mission-complete-title { font-family: 'Fredoka One'; font-size: 1.8em; color: var(--info); margin: 15px 0 5px; }
+        .score-display { font-family: 'Fredoka One'; font-size: 3.5em; color: var(--success); margin: 5px 0; }
+        
+        .cert-card {
+            background: #f0fdf4; /* Very light green */
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto 20px;
+            text-align: left;
+            border: 3px solid var(--success); /* Green border */
+            position: relative;
+        }
+
+        .cert-card::after {
+            content: '⭐';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 1.5rem;
+        }
+
+        .cert-row { margin-bottom: 8px; display: flex; flex-direction: column; gap: 2px; }
+        .cert-label { font-weight: 800; color: var(--info); text-transform: uppercase; font-size: 0.75em; }
+        .cert-value { font-weight: 700; color: #1e293b; font-size: 1.1em; border-bottom: 2px solid var(--success); width: 100%; padding-bottom: 2px; }
+
+        .trial-info-text {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: #475569; font-weight: 700; margin: 15px 0; font-size: 0.85em;
+            padding: 0 10px;
+        }
+
+        /* Review Section */
+        .review-section { text-align: left; margin-top: 30px; border-top: 2px solid #f1f5f9; padding-top: 15px; }
+        .review-item { background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 12px; }
+        .review-q { font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 0.95em; }
+        .review-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.8em; }
+        .tag-wrong { background: #fee2e2; color: #dc2626; }
+        .tag-correct { background: #dcfce7; color: #16a34a; }
+
+        .btn { 
+            padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; 
+            transition: 0.2s; font-family: inherit; font-size: 0.95em;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-retry { background: var(--secondary); color: white; }
+        .btn-print { background: var(--info); color: white; border-bottom: 4px solid #1e40af; }
+        .btn-print:active { border-bottom-width: 0; transform: translateY(2px); }
+
+        .nav-controls { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+        .nav-controls .btn { flex: 1; }
+
+        .action-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; width: 100%; }
+        .action-group .btn { width: 100%; }
+
+        .hidden { display: none !important; }
+
+        /* Desktop Adjustments */
+        @media (min-width: 600px) {
+            body { align-items: center; }
+            header { padding: 20px; }
+            .app-logo { width: 100px; }
+            .logo-text { font-size: 2.2em; }
+            .screen { padding: 30px; }
+            .question-text { font-size: 1.25em; }
+            .cert-row { flex-direction: row; align-items: baseline; gap: 10px; }
+            .cert-label { min-width: 80px; }
+            .action-group { flex-direction: row; justify-content: center; }
+            .action-group .btn { width: auto; }
+            .score-display { font-size: 5em; }
+            .mission-complete-title { font-size: 2.5em; }
+            #report-screen { border-width: 12px; margin: 20px; padding: 40px 30px 30px; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { border: none; box-shadow: none; width: 100%; max-width: 100%; margin: 0; }
+            header, #welcome-screen, #exam-screen, .action-group, .trial-info-text, .review-section { display: none !important; }
+            #report-screen { 
+                display: block !important; 
+                border: 20px solid var(--info) !important;
+                margin: 0; 
+                height: 98vh;
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact;
+            }
+            #report-screen::before { top: 10px; }
+            .cert-row { flex-direction: row !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container">
+    <header id="header-area">
+        <img src="WISEROBOTICS_LOGO.jpg" alt="Logo" class="app-logo">
+        <div class="logo-text">WISE ROBOTICS</div>
+    </header>
+
+    <!-- Welcome -->
+    <div id="welcome-screen" class="screen active">
+        <div class="info-form">
+            <h2 style="text-align:center; color: var(--primary); font-family: 'Fredoka One'; margin-top: 0;">Student Registration 📋</h2>
+            <div class="input-group">
+                <label>FULL NAME</label>
+                <input type="text" id="student-name" placeholder="Enter your name">
+            </div>
+            <div class="input-group">
+                <label>SCHOOL</label>
+                <input type="text" id="school-name" placeholder="Enter school name">
+            </div>
+            <div class="input-group">
+                <label>CLASS / GRADE / JHS </label>
+                <input type="text" id="class-name" value="Upper Level">
+            </div>
+            <button class="btn btn-primary" onclick="startExam()">START MISSION 🚀</button>
+        </div>
+    </div>
+
+    <!-- Exam -->
+    <div id="exam-screen" class="screen">
+        <div class="progress-track"><div id="progress-fill"></div></div>
+        <div id="q-counter" style="font-weight: 800; color: var(--primary); margin-bottom: 10px; font-size: 0.9em;">Question 1 of 50</div>
+        <div id="question-area" style="min-height: 200px;"></div>
+        <div class="nav-controls">
+            <button class="btn btn-primary" id="prev-btn" onclick="goPrev()">⬅ BACK</button>
+            <button class="btn btn-primary" id="next-btn" onclick="goNext()">NEXT ➡</button>
+            <button class="btn btn-primary" id="submit-btn" style="background: var(--success); display:none;" onclick="finishExam()">SUBMIT 🏁</button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="report-screen" class="screen">
+        <div class="mission-complete-title">AWESOME WORK! 🏅</div>
+        <div style="font-size: 2.5em; margin: 0;">🎓</div>
+        <div class="score-display" id="final-score">0%</div>
+
+        <div class="cert-card">
+            <div class="cert-row"><span class="cert-label">NAME:</span> <span class="cert-value" id="res-name"></span></div>
+            <div class="cert-row"><span class="cert-label">SCHOOL:</span> <span class="cert-value" id="res-school"></span></div>
+            <div class="cert-row"><span class="cert-label">LEVEL:</span> <span class="cert-value" id="res-class"></span></div>
+        </div>
+
+        <p id="result-comment" style="font-weight: 700; color: #334155; max-width: 450px; margin: 10px auto; font-size: 1em;"></p>
+
+        <div class="action-group">
+            <button class="btn btn-print" onclick="window.print()">🖨️ PRINT CERTIFICATE</button>
+            <button id="retry-btn" class="btn btn-retry hidden" onclick="restartForSecondAttempt()">TRY AGAIN 🔄</button>
+        </div>
+
+        <div id="trial-info-box" class="trial-info-text"></div>
+
+        <div id="review-area" class="review-section hidden">
+            <h3 style="color: var(--primary); font-family: 'Fredoka One'; margin-top: 0;">Detailed Review 🧐</h3>
+            <div id="review-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "A sprite must start moving automatically when the program begins. Which block should start the code?", a: ["When green flag clicked", "When key pressed", "When sprite clicked"], c: 0 },
+        { q: "A student wants a sprite to move first and then turn. What must be done to achieve this?", a: ["Rearrange the order of blocks", "Change the sprite", "Change the background"], c: 0 },
+        { q: "A sprite should move 10 steps five times. Which block is most suitable?", a: ["Repeat block", "Wait block", "Sound block"], c: 0 },
+        { q: "If a sprite moves too fast in an animation, what should be added?", a: ["Wait block", "Hide block", "Stop block"], c: 0 },
+        { q: "A sprite should move continuously during a game. Which loop is most suitable?", a: ["Repeat loop", "Forever loop", "If block"], c: 1 },
+        { q: "If instructions are placed in the wrong order, what may happen?", a: ["The program behaves incorrectly", "The program runs faster", "The sprite disappears"], c: 0 },
+        { q: "A sprite should move forward and then jump. What determines correct behavior?", a: ["Block order", "Block color", "Sprite size"], c: 0 },
+        { q: "Why do block coding platforms use puzzle-shaped blocks?", a: ["Decoration", "To connect blocks correctly", "To slow coding"], c: 1 },
+        { q: "A student writes many repeated instructions instead of using loops. What problem may occur?", a: ["Longer code and inefficiency", "Faster program speed", "Automatic game reset"], c: 0 },
+        { q: "A program starts but nothing happens. What is the first block to check?", a: ["Event block", "Motion block", "Costume block"], c: 0 },
+        { q: "If the X value increases, the sprite moves:", a: ["Left", "Right", "Up"], c: 1 },
+        { q: "If the Y value decreases, the sprite moves:", a: ["Up", "Down", "Left"], c: 1 },
+        { q: "Which block moves a sprite smoothly over time?", a: ["Move block", "Glide block", "Turn block"], c: 1 },
+        { q: "Which block category mainly controls sprite movement?", a: ["Motion blocks", "Sound blocks", "Looks blocks"], c: 0 },
+        { q: "A sprite must move step by step along a path. Which blocks are needed?", a: ["Motion blocks", "Pen blocks", "Sound blocks"], c: 0 },
+        { q: "If a sprite must turn 90 degrees, which block is used?", a: ["Turn block", "Hide block", "Say block"], c: 0 },
+        { q: "A sprite must move upward on the stage. Which coordinate should increase?", a: ["X", "Y", "Direction"], c: 1 },
+        { q: "A sprite starts at X=0, Y=0 and receives change Y by 50. What happens?", a: ["Moves down", "Moves up", "Moves right"], c: 1 },
+        { q: "If a sprite moves left, what is happening to the X value?", a: ["It increases", "It decreases", "It stays the same"], c: 1 },
+        { q: "Which block would move a sprite instantly instead of gradually?", a: ["Move block", "Glide block", "Wait block"], c: 0 },
+        { q: "Which event starts most Scratch programs?", a: ["When green flag clicked", "When sprite clicked", "When key pressed"], c: 0 },
+        { q: "A sprite moves when the spacebar is pressed. What concept is used?", a: ["Event", "Variable", "Loop"], c: 0 },
+        { q: "In a game, arrow keys allow the player to control a character. What is this called?", a: ["Animation", "User interaction", "Decoration"], c: 1 },
+        { q: "A sprite reacts when clicked by the mouse. Which block is needed?", a: ["When sprite clicked", "When green flag clicked", "Forever loop"], c: 0 },
+        { q: "When one sprite sends a signal to another sprite to start moving, what feature is used?", a: ["Broadcast message", "Variable", "Motion block"], c: 0 },
+        { q: "If a game should only start after pressing Enter, which block is needed?", a: ["When key pressed", "When green flag clicked", "Repeat block"], c: 0 },
+        { q: "A program checks whether a key is pressed or not. What data type is involved?", a: ["Boolean", "Number", "Text"], c: 0 },
+        { q: "If a sprite starts speaking when clicked, what triggered the action?", a: ["Event", "Loop", "Variable"], c: 0 },
+        { q: "When a program responds to keyboard input, what type of programming feature is used?", a: ["Interaction event", "Motion control", "Costume control"], c: 0 },
+        { q: "When multiple sprites react to a signal sent by another sprite, what is being used?", a: ["Broadcast communication", "Motion commands", "Stage effects"], c: 0 },
+        { q: "A sprite must blink continuously during a game. Which block is best?", a: ["Forever loop", "Repeat loop", "Stop block"], c: 0 },
+        { q: "Which loop repeats actions a fixed number of times?", a: ["Forever loop", "Repeat loop", "If loop"], c: 1 },
+        { q: "Why are loops important in coding?", a: ["They reduce repeated instructions", "They delete blocks", "They stop programs"], c: 0 },
+        { q: "A character walking animation switches costumes repeatedly. What is the purpose?", a: ["To create movement illusion", "To reduce memory", "To stop the animation"], c: 0 },
+        { q: "If a sprite must perform an action 10 times, which loop is appropriate?", a: ["Forever loop", "Repeat loop", "If block"], c: 1 },
+        { q: "What will happen if no loop is used in an animation?", a: ["Animation runs once and stops", "Animation runs faster", "Animation never starts"], c: 0 },
+        { q: "Which block helps control animation timing?", a: ["Wait block", "Turn block", "Hide block"], c: 0 },
+        { q: "A sprite repeats a motion continuously while the game runs. What block is required?", a: ["Forever loop", "Repeat loop", "Stop block"], c: 0 },
+        { q: "Which block helps slow down animation for smoother movement?", a: ["Wait block", "Sound block", "Stop block"], c: 0 },
+        { q: "A sprite changes costume every 0.5 seconds. Which block controls the delay?", a: ["Wait block", "Repeat block", "Glide block"], c: 0 },
+        { q: "A game stores the player's points in a score variable. What data type is this?", a: ["Number", "String", "Boolean"], c: 0 },
+        { q: "A variable stores the player's name. What type of data is used?", a: ["String", "Boolean", "Number"], c: 0 },
+        { q: "A condition checks if game over = true. What type of data is this?", a: ["Boolean", "Number", "String"], c: 0 },
+        { q: "When the score increases after catching an object, what is happening?", a: ["Data updating", "Costume switching", "Stage change"], c: 0 },
+        { q: "Why should score variables be displayed on the screen?", a: ["To show player progress", "To hide information", "To decorate the stage"], c: 0 },
+        { q: "If a variable is not updated during a game, what may happen?", a: ["Incorrect game information", "Faster gameplay", "Automatic reset"], c: 0 },
+        { q: "Which feature stores changing game values like score, lives, or level?", a: ["Variable", "Event", "Costume"], c: 0 },
+        { q: "A game reduces lives when a player hits an obstacle. What stores the number of lives?", a: ["Variable", "Motion block", "Broadcast block"], c: 0 },
+        { q: "When a game becomes harder after reaching score = 20. what concept is used?", a: ["Level progression", "Costume animation", "Background design"], c: 0 },
+        { q: "A quiz checks if the answer is correct and shows feedback. Which block is mainly used?", a: ["If-Else block", "Motion block", "Sound block"], c: 0 }
+    ];
+
+    let currentQ = 0;
+    let userAnswers = new Array(50).fill(null);
+    let attemptCount = 0;
+
+    function startExam() {
+        const name = document.getElementById('student-name').value;
+        const school = document.getElementById('school-name').value;
+        if (!name || !school) return alert("Please enter your Name and School!");
+        
+        document.getElementById('welcome-screen').classList.remove('active');
+        document.getElementById('exam-screen').classList.add('active');
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQ];
+        const area = document.getElementById('question-area');
+        
+        document.getElementById('q-counter').innerText = `Question ${currentQ + 1} of 50`;
+        document.getElementById('progress-fill').style.width = `${((currentQ + 1) / 50) * 100}%`;
+        
+        area.innerHTML = `
+            <div class="question-text">${q.q}</div>
+            <div class="options">
+                ${q.a.map((opt, idx) => `
+                    <div class="option ${userAnswers[currentQ] === idx ? 'selected' : ''}" onclick="selectOpt(${idx})">
+                        ${String.fromCharCode(65 + idx)}. ${opt}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        document.getElementById('prev-btn').style.visibility = currentQ === 0 ? 'hidden' : 'visible';
+        document.getElementById('next-btn').style.display = currentQ === 49 ? 'none' : 'block';
+        document.getElementById('submit-btn').style.display = currentQ === 49 ? 'block' : 'none';
+        
+        document.getElementById('next-btn').disabled = userAnswers[currentQ] === null;
+        document.getElementById('submit-btn').disabled = userAnswers[currentQ] === null;
+        
+        // Auto scroll to top of question on mobile
+        window.scrollTo(0, 0);
+    }
+
+    function selectOpt(idx) {
+        userAnswers[currentQ] = idx;
+        renderQuestion();
+    }
+
+    function goNext() { if(currentQ < 49) { currentQ++; renderQuestion(); } }
+    function goPrev() { if(currentQ > 0) { currentQ--; renderQuestion(); } }
+
+    function finishExam() {
+        attemptCount++;
+        let score = 0;
+        let reviewHtml = '';
+
+        userAnswers.forEach((ans, i) => {
+            const isCorrect = ans === questions[i].c;
+            if(isCorrect) score++;
+            
+            reviewHtml += `
+                <div class="review-item">
+                    <div class="review-q">${i+1}. ${questions[i].q}</div>
+                    <div class="review-tags">
+                        <span class="tag ${isCorrect ? 'tag-correct' : 'tag-wrong'}">Your Answer: ${questions[i].a[ans]}</span>
+                        ${!isCorrect ? `<span class="tag tag-correct">Correct: ${questions[i].a[questions[i].c]}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        const pct = Math.round((score / 50) * 100);
+        
+        document.getElementById('res-name').innerText = document.getElementById('student-name').value;
+        document.getElementById('res-school').innerText = document.getElementById('school-name').value;
+        document.getElementById('res-class').innerText = document.getElementById('class-name').value;
+        document.getElementById('final-score').innerText = pct + "%";
+        
+        if(pct >= 85) {
+            document.getElementById('result-comment').innerText = "Legendary! You are a master of Wise Robotics! 🏆🔥";
+        } else if(pct >= 70) {
+            document.getElementById('result-comment').innerText = "Fantastic job! Your coding future is bright! 🌟✨";
+        } else {
+            document.getElementById('result-comment').innerText = "Good effort! Keep practicing to master the blocks! 💻🚀";
+        }
+
+        const infoBox = document.getElementById('trial-info-box');
+        const retryBtn = document.getElementById('retry-btn');
+        const reviewArea = document.getElementById('review-area');
+
+        if (attemptCount === 1) {
+            infoBox.innerHTML = "💡 Attempt 1 Complete. You have one more chance to level up!";
+            retryBtn.classList.remove('hidden');
+            reviewArea.classList.add('hidden');
+        } else {
+            infoBox.innerHTML = "✨ Mission Complete! Scroll down to see the path to success.";
+            retryBtn.classList.add('hidden');
+            reviewArea.classList.remove('hidden');
+            document.getElementById('review-list').innerHTML = reviewHtml;
+        }
+
+        document.getElementById('header-area').style.display = 'none';
+        document.getElementById('exam-screen').classList.remove('active');
+        document.getElementById('report-screen').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    function restartForSecondAttempt() {
+        currentQ = 0;
+        userAnswers = new Array(50).fill(null);
+        document.getElementById('header-area').style.display = 'block';
+        document.getElementById('report-screen').classList.remove('active');
+        document.getElementById('exam-screen').classList.add('active');
+        renderQuestion();
+    }
+</script>
+</body>
+</html>
